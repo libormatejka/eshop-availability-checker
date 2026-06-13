@@ -10,6 +10,8 @@ SITEMAP_URLS = [
 
 SEARCH_SUBSTRINGS = [
     "tomb-raider-legacy-of-atlantis-deluxe-edition",
+    "Tomb-Raider-Legacy-of-Atlantis-Deluxe-Edition",
+    "tomb-raider-legacy-of-atlantis-deluxe-edition"
     # sem přidej další substrings
 ]
 # ─────────────────────────────────────────────────────────────────────────────
