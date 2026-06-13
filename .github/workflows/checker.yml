@@ -22,4 +22,7 @@ jobs:
         run: pip install requests
 
       - name: Run checker
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: python checker.py

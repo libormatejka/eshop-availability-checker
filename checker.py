@@ -1,5 +1,8 @@
+import os
+import smtplib
 import requests
 import xml.etree.ElementTree as ET
+from email.mime.text import MIMEText
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 SITEMAP_URLS = [
@@ -10,10 +13,10 @@ SITEMAP_URLS = [
 
 SEARCH_SUBSTRINGS = [
     "tomb-raider-legacy-of-atlantis-deluxe-edition",
-    "Tomb-Raider-Legacy-of-Atlantis-Deluxe-Edition",
-    "tomb-raider-legacy-of-atlantis-deluxe-edition"
     # sem přidej další substrings
 ]
+
+EMAIL_TO = "jsem@libor-matejka.cz"
 # ─────────────────────────────────────────────────────────────────────────────
 
 HEADERS = {
@@ -24,6 +27,24 @@ HEADERS = {
     "Referer": "https://www.google.com/",
     "Connection": "keep-alive",
 }
+
+
+def send_email(subject, body):
+    smtp_user = os.environ.get("GMAIL_USER")
+    smtp_pass = os.environ.get("GMAIL_APP_PASSWORD")
+    if not smtp_user or not smtp_pass:
+        print("  [email] GMAIL_USER nebo GMAIL_APP_PASSWORD není nastaven, email přeskočen.")
+        return
+
+    msg = MIMEText(body, "plain", "utf-8")
+    msg["Subject"] = subject
+    msg["From"] = smtp_user
+    msg["To"] = EMAIL_TO
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(smtp_user, smtp_pass)
+        server.sendmail(smtp_user, EMAIL_TO, msg.as_string())
+    print(f"  [email] Odesláno na {EMAIL_TO}")
 
 
 def check_sitemap(sitemap_url, substrings):
@@ -56,6 +77,8 @@ def check_sitemap(sitemap_url, substrings):
             print(f"  NALEZENO \"{substring}\" ({len(found_urls)} URL):")
             for url in found_urls:
                 print(f"    {url}")
+            body = f"Nalezeno \"{substring}\" v {sitemap_url}:\n\n" + "\n".join(found_urls)
+            send_email(f"[Checker] Nalezeno: {substring}", body)
         else:
             print(f"  Nenalezeno: \"{substring}\"")
 
